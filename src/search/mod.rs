@@ -20,17 +20,13 @@ impl SearchBuilder {
     pub fn send(self) -> Result<Vec<Profile>, Error> {
         let url = self.0.trim_right_matches('&');
 
-        println!("URL: {}", url);
-
         let mut response = CLIENT.get(url).send()?;
         let text = response.text()?;
         let doc = Document::from(text.as_str());
 
         Ok(doc.find(Class("entry__link")).filter_map(|node| {
-            println!("Found node");
             node.attr("href")
                 .and_then(|text| {
-                    println!("Got attr {}", text);
                     let digits = text.chars()
                         .skip_while(|ch| !ch.is_digit(10))
                         .take_while(|ch| ch.is_digit(10))
@@ -39,10 +35,7 @@ impl SearchBuilder {
                     digits.parse::<u32>().ok()
                 })
                 .and_then(|id| {
-                    println!("Found id {}", id);
                     let profile = Profile::get(id);
-
-                    println!("Profile: {:?}", profile);
 
                     profile.ok()
                 })

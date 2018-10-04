@@ -1,6 +1,6 @@
 [package]
 name = "lodestone"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Maid Dog <maiddogsrl@gmail.com>"]
 description = "A website wrapper for FFXIV's lodestone."
 documentation = "https://docs.rs/lodestone"
@@ -11,8 +11,7 @@ categories = ["api-bindings"]
 license = "MIT"
 
 [dependencies]
-# bitflags = "1.0.3"
-failure = "0.1.1"
-lazy_static = "1.0"
-reqwest = "0.8.6"
-select = "0.4.2"
+failure = "0.1.2"
+lazy_static = "1.1"
+reqwest = "0.9"
+select = "0.4"
