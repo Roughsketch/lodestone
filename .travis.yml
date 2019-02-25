@@ -4,6 +4,7 @@ rust:
   - beta
   - nightly
 os:
+  - windows
   - linux
   - osx
 cache:
@@ -17,4 +18,4 @@ matrix:
     - nightly
 script:
   - cargo build
-- cargo test
+  - cargo test
