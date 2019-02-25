@@ -179,6 +179,7 @@ impl Profile {
                     ClassType::Bard => classes.insert(ClassType::Archer, level),
                     ClassType::BlackMage => classes.insert(ClassType::Thaumaturge, level),
                     ClassType::Summoner => classes.insert(ClassType::Arcanist, level),
+                    ClassType::BlueMage => classes.insert(ClassType::BlueMage, level),
                     _ => (),
                 }
 

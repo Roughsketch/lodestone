@@ -18,7 +18,7 @@ impl SearchBuilder {
     }
 
     pub fn send(self) -> Result<Vec<Profile>, Error> {
-        let url = self.0.trim_right_matches('&');
+        let url = self.0.trim_end_matches('&');
 
         let mut response = CLIENT.get(url).send()?;
         let text = response.text()?;

@@ -17,22 +17,14 @@ lazy_static! {
 mod tests {
     #[test]
     fn it_works() {
-        use model::{race::Race, profile::Profile, clan::Clan, gender::Gender, server::Server};
+        use model::profile::Profile;
 
-        let profile = Profile::get(14952101).unwrap();
-        assert_eq!(profile.free_company, Some("Sky Pirate".to_string()));
-        assert_eq!(profile.name, "Api Idyoum");
-        assert_eq!(profile.server, Server::Leviathan);
-        assert_eq!(profile.race, Race::Lalafell);
-        assert_eq!(profile.clan, Clan::Dunesfolk);
-        assert_eq!(profile.gender, Gender::Female);
-
-        println!("{:#?}", profile);
+        assert!(Profile::get(14952101).is_ok());
     }
 
     #[test]
     fn search_works() {
-        use model::{race::Race, clan::Clan, gender::Gender, server::Server};
+        use model::server::Server;
         use search::SearchBuilder;
 
         let profiles = SearchBuilder::new()
@@ -42,16 +34,5 @@ mod tests {
             .unwrap();
 
         assert_eq!(profiles.len(), 1);
-
-        let profile = &profiles[0];
-
-        assert_eq!(profile.free_company, Some("Goddess of Magic".to_string()));
-        assert_eq!(profile.name, "Raspberry Custard");
-        assert_eq!(profile.server, Server::Famfrit);
-        assert_eq!(profile.race, Race::Aura);
-        assert_eq!(profile.clan, Clan::Xaela);
-        assert_eq!(profile.gender, Gender::Female);
-
-        println!("{:#?}", profile);
     }
 }
