@@ -5,11 +5,9 @@ Library for scraping data off of FFXIV's lodestone
 
 ## Get a profile from a user id
 ```rust
-fn get_profile(user_id: u32) -> Result<Profile, Error> {
-  use model::profile::Profile;
+use model::profile::Profile;
   
-  Profile::get(user_id)
-}
+let profile = Profile::get(user_id).unwrap();
 ```
 
 ## Search for a profile
@@ -23,3 +21,4 @@ fn search_user(name: &str, server: Option<Server>) -> Result<Vec<Profile>, Error
     
   search.send()
 }
+```
