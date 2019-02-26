@@ -24,8 +24,9 @@ impl SearchBuilder {
         let text = response.text()?;
         let doc = Document::from(text.as_str());
 
-        Ok(doc.find(Class("entry__link")).filter_map(|node| {
-            node.attr("href")
+        Ok(doc.find(Class("entry__link"))
+            .filter_map(|node| node
+                .attr("href")
                 .and_then(|text| {
                     let digits = text.chars()
                         .skip_while(|ch| !ch.is_digit(10))
@@ -38,8 +39,8 @@ impl SearchBuilder {
                     let profile = Profile::get(id);
 
                     profile.ok()
-                })
-        }).collect())
+                }))
+            .collect())
     }
 
     pub fn character(mut self, name: &str) -> Self {
