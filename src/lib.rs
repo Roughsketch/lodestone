@@ -12,15 +12,15 @@ lazy_static::lazy_static! {
 mod tests {
     #[test]
     fn it_works() {
-        use model::profile::Profile;
+        use crate::model::profile::Profile;
 
         assert!(Profile::get(14952101).is_ok());
     }
 
     #[test]
     fn search_works() {
-        use model::server::Server;
-        use search::SearchBuilder;
+        use crate::model::server::Server;
+        use crate::search::SearchBuilder;
 
         let profiles = SearchBuilder::new()
             .character("Raspberry Custard")
