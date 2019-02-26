@@ -2,9 +2,9 @@ use failure::Error;
 use select::document::Document;
 use select::predicate::Class;
 
-use CLIENT;
-use model::profile::Profile;
-use model::server::Server;
+use crate::CLIENT;
+use crate::model::profile::Profile;
+use crate::model::server::Server;
 
 use std::fmt::Write;
 

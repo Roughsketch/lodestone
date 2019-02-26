@@ -1,3 +1,4 @@
+use failure::Fail;
 use std::collections::HashMap;
 use std::str::FromStr;
 

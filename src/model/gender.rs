@@ -1,3 +1,4 @@
+use failure::Fail;
 use std::str::FromStr;
 
 #[derive(Clone, Debug, Fail)]

@@ -1,15 +1,10 @@
 #[allow(unused)]
 
-#[macro_use] extern crate failure;
-#[macro_use] extern crate lazy_static;
-extern crate reqwest;
-extern crate select;
-
 pub mod model;
 pub mod search;
 
 /// Lazy static client to avoid creating new ones every time
-lazy_static! {
+lazy_static::lazy_static! {
     static ref CLIENT: reqwest::Client = reqwest::Client::new();
 }
 
