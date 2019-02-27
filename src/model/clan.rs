@@ -6,7 +6,7 @@ use std::str::FromStr;
 pub struct ClanParseError(String);
 
 /// Enumeration for the clans available in XIV.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Clan {
     //  Au Ra
     Xaela,

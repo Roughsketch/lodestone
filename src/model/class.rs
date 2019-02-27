@@ -11,7 +11,7 @@ pub struct ClassTypeParseError(String);
 /// In the case of unlocking a job, the higher level one is preferred.
 /// For example, after unlocking Paladin, the class type will return
 /// Paladin instead of Gladiator.
-#[derive(Clone, Debug, Hash, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum ClassType {
     //  Tank
     Paladin,
@@ -109,7 +109,7 @@ impl FromStr for ClassType {
 }
 
 /// Holds information about a profiles level in a particular class.
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Classes(HashMap<ClassType, Option<u32>>);
 
 impl Classes {

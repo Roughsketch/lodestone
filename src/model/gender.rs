@@ -6,7 +6,7 @@ use std::str::FromStr;
 pub struct GenderParseError(String);
 
 /// Enumeration for the gender of a character.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Gender {
     Female,
     Male,

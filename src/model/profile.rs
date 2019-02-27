@@ -6,7 +6,7 @@ use crate::CLIENT;
 
 use std::str::FromStr;
 
-use super::{
+use crate::model::{
     clan::Clan,
     class::{Classes, ClassType},
     gender::Gender, 
@@ -28,6 +28,7 @@ pub enum SearchError {
     InvalidData(String),
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 struct CharInfo {
     race: Race,
     clan: Clan,
@@ -46,7 +47,7 @@ macro_rules! ensure_node {
 }
 
 /// Holds all the data for a profile retrieved via Lodestone.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Profile {
     /// The id associated with the profile
     pub user_id: u32,

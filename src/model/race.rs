@@ -6,7 +6,7 @@ use std::str::FromStr;
 pub struct RaceParseError(String);
 
 /// Models the races available in XIV.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Race {
     Aura,
     Elezen,

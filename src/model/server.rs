@@ -9,7 +9,7 @@ pub struct ServerParseError(String);
 /// An enumeration for the servers that are currently available.
 /// This list is taken from https://na.finalfantasyxiv.com/lodestone/worldstatus/
 /// and the order should be identical.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Server {
     //  Elemental
     Aegis,
