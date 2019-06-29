@@ -3,7 +3,7 @@
 pub mod model;
 pub mod search;
 
-/// Lazy static client to avoid creating new ones every time
+// Lazy static client to avoid creating new ones every time
 lazy_static::lazy_static! {
     static ref CLIENT: reqwest::Client = reqwest::Client::new();
 }
@@ -19,12 +19,12 @@ mod tests {
 
     #[test]
     fn search_works() {
-        use crate::model::server::Server;
+        use crate::model::datacenter::Datacenter;
         use crate::search::SearchBuilder;
 
         let profiles = SearchBuilder::new()
             .character("Raspberry Custard")
-            .server(Server::Famfrit)
+            .datacenter(Datacenter::Primal)
             .send()
             .unwrap();
 

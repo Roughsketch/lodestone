@@ -114,7 +114,12 @@ impl Profile {
     }
 
     fn parse_server(doc: &Document) -> Result<Server, Error> {
-        Ok(Server::from_str(&ensure_node!(doc, Class("frame__chara__world")).text())?)
+        let text = ensure_node!(doc, Class("frame__chara__world")).text();
+        let server = text.split("\u{A0}").next();
+
+        ensure!(server.is_some(), SearchError::InvalidData("Could not find server string.".into()));
+
+        Ok(Server::from_str(&server.unwrap())?)
     }
 
     fn parse_char_info(doc: &Document) -> Result<CharInfo, Error> {

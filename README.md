@@ -14,11 +14,11 @@ let profile = Profile::get(user_id).unwrap();
 
 ## Search for a profile
 ```rust
-fn search_user(name: &str, server: Option<Server>) -> Result<Vec<Profile>, Error> {
+fn search_user(name: &str, dc: Option<Datacenter>) -> Result<Vec<Profile>, Error> {
   let search = SearchBuilder::new().character(name);
         
-  if let Some(s) = server {
-    search = search.server(s);
+  if let Some(d) = dc {
+    search = search.datacenter(d);
   }
     
   search.send()

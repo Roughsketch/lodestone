@@ -4,7 +4,7 @@ use select::predicate::Class;
 
 use crate::CLIENT;
 use crate::model::profile::Profile;
-use crate::model::server::Server;
+use crate::model::datacenter::Datacenter;
 
 use std::fmt::Write;
 
@@ -49,8 +49,8 @@ impl SearchBuilder {
         self
     }
 
-    pub fn server(mut self, server: Server) -> Self {
-        let _ = write!(self.0, "worldname={}&", server);
+    pub fn datacenter(mut self, datacenter: Datacenter) -> Self {
+        let _ = write!(self.0, "worldname=_dc_{}&", datacenter);
 
         self
     }
