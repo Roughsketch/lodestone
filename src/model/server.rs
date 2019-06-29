@@ -75,14 +75,17 @@ pub enum Server {
     Zalera,
     //  Chaos
     Cerberus,
-    Lich,
     Louisoix,
     Moogle,
-    Odin,
     Omega,
-    Phoenix,
     Ragnarok,
+    Spriggan,
+    //  Light
+    Lich,
+    Odin,
+    Phoenix,
     Shiva,
+    Twintania,
     Zodiark,
 }
 
@@ -155,16 +158,19 @@ impl FromStr for Server {
             "ULTROS" => Ok(Server::Ultros),
             //  Chaos
             "CERBERUS" => Ok(Server::Cerberus),
-            "LICH" => Ok(Server::Lich),
             "LOUISOIX" => Ok(Server::Louisoix),
             "MOOGLE" => Ok(Server::Moogle),
-            "ODIN" => Ok(Server::Odin),
             "OMEGA" => Ok(Server::Omega),
-            "PHOENIX" => Ok(Server::Phoenix),
             "RAGNAROK" => Ok(Server::Ragnarok),
+            "SPRIGGAN" => Ok(Server::Spriggan),
+            //  Light
+            "LICH" => Ok(Server::Lich),
+            "ODIN" => Ok(Server::Odin),
+            "PHOENIX" => Ok(Server::Phoenix),
             "SHIVA" => Ok(Server::Shiva),
+            "TWINTANIA" => Ok(Server::Twintania),
             "ZODIARK" => Ok(Server::Zodiark),
-
+            
             x => Err(ServerParseError(x.into())),
         }
     }
@@ -236,14 +242,17 @@ impl fmt::Display for Server {
             Server::Ultros => "Ultros",
             //  Chaos
             Server::Cerberus => "Cerberus",
-            Server::Lich => "Lich",
             Server::Louisoix => "Louisoix",
             Server::Moogle => "Moogle",
-            Server::Odin => "Odin",
             Server::Omega => "Omega",
-            Server::Phoenix => "Phoenix",
             Server::Ragnarok => "Ragnarok",
+            Server::Spriggan => "Spriggan",
+            //  Light
+            Server::Lich => "Lich",
+            Server::Odin => "Odin",
+            Server::Phoenix => "Phoenix",
             Server::Shiva => "Shiva",
+            Server::Twintania => "Twintania",
             Server::Zodiark => "Zodiark",
         };
 

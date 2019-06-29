@@ -13,6 +13,7 @@ pub enum Datacenter {
     Crystal,
     Elemental,
     Gaia,
+    Light,
     Mana,
     Primal,
 }
@@ -28,6 +29,7 @@ impl FromStr for Datacenter {
             "CRYSTAL" => Ok(Datacenter::Crystal),
             "ELEMENTAL" => Ok(Datacenter::Elemental),
             "GAIA" => Ok(Datacenter::Gaia),
+            "LIGHT" => Ok(Datacenter::Light),
             "MANA" => Ok(Datacenter::Mana),
             "PRIMAL" => Ok(Datacenter::Primal),
             x => Err(DatacenterParseError(x.into())),
@@ -43,6 +45,7 @@ impl fmt::Display for Datacenter {
             Datacenter::Crystal => "Crystal",
             Datacenter::Elemental => "Elemental",
             Datacenter::Gaia => "Gaia",
+            Datacenter::Light => "Light",
             Datacenter::Mana => "Mana",
             Datacenter::Primal => "Primal",
         };
