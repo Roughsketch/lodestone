@@ -19,7 +19,7 @@ pub enum Clan {
     Highlander,
     //  Lalafell
     Dunesfolk,
-    Plainsfork,
+    Plainsfolk,
     //  Miqo'te
     SeekerOfTheSun,
     KeeperOfTheMoon,
@@ -40,7 +40,7 @@ impl FromStr for Clan {
             "MIDLANDER" => Ok(Clan::Midlander),
             "HIGHLANDER" => Ok(Clan::Highlander),
             "DUNESFOLK" => Ok(Clan::Dunesfolk),
-            "PLAINSFORK" => Ok(Clan::Plainsfork),
+            "PLAINSFOLK" => Ok(Clan::Plainsfolk),
             "SEEKER OF THE SUN" => Ok(Clan::SeekerOfTheSun),
             "KEEPER OF THE MOON" => Ok(Clan::KeeperOfTheMoon),
             "SEA WOLF" => Ok(Clan::SeaWolf),
