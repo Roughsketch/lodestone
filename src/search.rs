@@ -30,6 +30,8 @@ impl SearchBuilder {
         }
     }
 
+    /// Builds the search and executes it, returning a list of profiles
+    /// that match the given criteria.
     pub fn send(self) -> Result<Vec<Profile>, Error> {
         let mut url = BASE_SEARCH_URL.to_owned();
 
@@ -88,28 +90,40 @@ impl SearchBuilder {
             .collect())
     }
 
+    /// A character name to search for. This can only be called once,
+    /// and any further calls will simply overwrite the previous name.
     pub fn character(mut self, name: &str) -> Self {
         self.character = Some(name.into());
         self
     }
 
+    /// A datacenter to search in. Mutually exclusive to server.
+    /// If a server was specified before calling this method,
+    /// it will be replaced by the newer datacenter.
     pub fn datacenter<D: Into<Datacenter>>(mut self, datacenter: D) -> Self {
         self.datacenter = Some(datacenter.into());
         self.server = None;
         self
     }
 
+    /// A server to search in. Mutually exclusive to datacenter.
+    /// If a datacenter was specified before calling this method,
+    /// it will be replaced by the newer server.
     pub fn server<S: Into<Server>>(mut self, server: S) -> Self {
         self.server = Some(server.into());
         self.datacenter = None;
         self
     }
 
+    /// Which language to filter by.
+    /// You can add multiple languages by calling this multiple times.
     pub fn lang<L: Into<Language>>(mut self, lang: L) -> Self {
         self.lang.insert(lang.into());
         self
     }
 
+    /// Which grand company to filter by.
+    /// You can add multiple grand company filters by calling this multiple times.
     pub fn grand_company<G: Into<GrandCompany>>(mut self, gc: G) -> Self {
         self.gc.insert(gc.into());
         self
