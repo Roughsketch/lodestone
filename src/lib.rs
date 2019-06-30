@@ -11,20 +11,24 @@ lazy_static::lazy_static! {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn it_works() {
+    fn can_grab_profile() {
         use crate::model::profile::Profile;
 
-        assert!(Profile::get(14952101).is_ok());
+        assert!(Profile::get(11908971).is_ok());
     }
 
     #[test]
-    fn search_works() {
+    fn can_create_search() {
         use crate::model::datacenter::Datacenter;
+        use crate::model::gc::GrandCompany;
+        use crate::model::language::Language;
         use crate::search::SearchBuilder;
 
         let profiles = SearchBuilder::new()
-            .character("Raspberry Custard")
+            .character("Strawberry Custard")
             .datacenter(Datacenter::Primal)
+            .lang(Language::English)
+            .grand_company(GrandCompany::Maelstrom)
             .send()
             .unwrap();
 

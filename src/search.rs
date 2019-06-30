@@ -5,20 +5,65 @@ use select::predicate::Class;
 use crate::CLIENT;
 use crate::model::profile::Profile;
 use crate::model::datacenter::Datacenter;
+use crate::model::gc::GrandCompany;
+use crate::model::language::Language;
+use crate::model::server::Server;
 
 use std::fmt::Write;
+use std::collections::HashSet;
 
 static BASE_SEARCH_URL: &str = "https://na.finalfantasyxiv.com/lodestone/character/?";
 
-pub struct SearchBuilder(String);
+#[derive(Clone, Debug, Default)]
+pub struct SearchBuilder {
+    server: Option<Server>,
+    datacenter: Option<Datacenter>,
+    character: Option<String>,
+    lang: HashSet<Language>,
+    gc: HashSet<GrandCompany>,
+}
 
 impl SearchBuilder {
     pub fn new() -> Self {
-        SearchBuilder(BASE_SEARCH_URL.into())
+        SearchBuilder {
+            .. Default::default()
+        }
     }
 
     pub fn send(self) -> Result<Vec<Profile>, Error> {
-        let url = self.0.trim_end_matches('&');
+        let mut url = BASE_SEARCH_URL.to_owned();
+
+        if let Some(name) = self.character {
+            let _ = write!(url, "q={}&", name);
+        }
+
+        if let Some(dc) = self.datacenter {
+            let _ = write!(url, "worldname=_dc_{}&", dc);
+        }
+
+        if let Some(s) = self.server {
+            let _ = write!(url, "worldname={}&", s);
+        }
+
+        self.lang.iter().for_each(|lang| {
+            let _ = match lang {
+                Language::Japanese => write!(url, "blog_lang=ja&"),
+                Language::English => write!(url, "blog_lang=en&"),
+                Language::German => write!(url, "blog_lang=de&"),
+                Language::French => write!(url, "blog_lang=fr&"),
+            };
+        });
+
+        self.gc.iter().for_each(|gc| {        
+            let _ = match gc {
+                GrandCompany::Unaffiliated => write!(url, "gcid=0&"),
+                GrandCompany::Maelstrom => write!(url, "gcid=1&"),
+                GrandCompany::TwinAdder => write!(url, "gcid=2&"),
+                GrandCompany::ImmortalFlames => write!(url, "gcid=3&"),
+            };
+        });
+
+        let url = url.trim_end_matches('&');
 
         let mut response = CLIENT.get(url).send()?;
         let text = response.text()?;
@@ -44,14 +89,29 @@ impl SearchBuilder {
     }
 
     pub fn character(mut self, name: &str) -> Self {
-        let _ = write!(self.0, "q={}&", name.replace(" ", "+"));
-
+        self.character = Some(name.into());
         self
     }
 
-    pub fn datacenter(mut self, datacenter: Datacenter) -> Self {
-        let _ = write!(self.0, "worldname=_dc_{}&", datacenter);
+    pub fn datacenter<D: Into<Datacenter>>(mut self, datacenter: D) -> Self {
+        self.datacenter = Some(datacenter.into());
+        self.server = None;
+        self
+    }
 
+    pub fn server<S: Into<Server>>(mut self, server: S) -> Self {
+        self.server = Some(server.into());
+        self.datacenter = None;
+        self
+    }
+
+    pub fn lang<L: Into<Language>>(mut self, lang: L) -> Self {
+        self.lang.insert(lang.into());
+        self
+    }
+
+    pub fn grand_company<G: Into<GrandCompany>>(mut self, gc: G) -> Self {
+        self.gc.insert(gc.into());
         self
     }
 }
