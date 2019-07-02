@@ -12,7 +12,7 @@ use model::profile::Profile;
 let profile = Profile::get(user_id).unwrap();
 ```
 
-## Search for a profile
+## Search for a profile in a datacenter
 ```rust
 fn search_user(name: &str, dc: Option<Datacenter>) -> Result<Vec<Profile>, Error> {
   let search = SearchBuilder::new().character(name);
@@ -23,6 +23,20 @@ fn search_user(name: &str, dc: Option<Datacenter>) -> Result<Vec<Profile>, Error
     
   search.send()
 }
+```
+
+
+## A more targeted search
+```rust
+let profiles = SearchBuilder::new()
+    .character("Strawberry Custard")
+    .datacenter(Datacenter::Primal)
+    .lang(Language::English)
+    .grand_company(GrandCompany::Maelstrom)
+    .send()
+    .unwrap();
+
+let strawberry = profiles.next();
 ```
 
 [ci]: https://travis-ci.org/Roughsketch/lodestone
