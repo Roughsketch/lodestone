@@ -36,7 +36,7 @@ let profiles = SearchBuilder::new()
     .send()
     .unwrap();
 
-let strawberry = profiles.next();
+let strawberry = profiles.first().unwrap();
 ```
 
 [ci]: https://travis-ci.org/Roughsketch/lodestone
