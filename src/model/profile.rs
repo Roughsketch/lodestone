@@ -61,6 +61,10 @@ pub struct Profile {
     pub clan: Clan,
     /// Character's gender.
     pub gender: Gender,
+    /// Max HP.
+    pub hp: u32,
+    /// Max MP.
+    pub mp: u32,
     /// A list of classes and their corresponding levels.
     classes: Classes,
 }
@@ -76,6 +80,7 @@ impl Profile {
 
         //  Holds the string for Race, Clan, and Gender in that order
         let char_info = Self::parse_char_info(&main_doc)?;
+        let (hp, mp) = Self::parse_char_param(&main_doc)?;
 
         Ok(Self {
             user_id,
@@ -85,6 +90,8 @@ impl Profile {
             race: char_info.race,
             clan: char_info.clan,
             gender: char_info.gender,
+            hp: hp,
+            mp: mp,
             classes: Self::parse_classes(&classes_doc)?,
         })
     }
@@ -154,6 +161,23 @@ impl Profile {
                 gender: Gender::from_str(&char_info[2])?,
             })
         }
+    }
+
+    fn parse_char_param(doc: &Document) -> Result<(u32, u32), Error> {
+        let attr_block = ensure_node!(doc, Class("character__param"));
+        let mut hp = None;
+        let mut mp = None;
+        for item in attr_block.find(Name("li")) {
+            if item.find(Class("character__param__text__hp--en-us")).collect::<Vec<_>>().len() == 1 {
+                hp = Some(ensure_node!(item, Name("span")).text().parse::<u32>()?);
+            } else if item.find(Class("character__param__text__mp--en-us")).collect::<Vec<_>>().len() == 1 {
+                mp = Some(ensure_node!(item, Name("span")).text().parse::<u32>()?);
+            } else {
+                continue
+            }
+        }
+        ensure!(hp.is_some() && mp.is_some(), SearchError::InvalidData("character__param".into()));
+        Ok((hp.unwrap(), mp.unwrap()))
     }
 
     fn parse_classes(doc: &Document) -> Result<Classes, Error> {
