@@ -7,6 +7,7 @@ use crate::CLIENT;
 use std::str::FromStr;
 
 use crate::model::{
+    attribute::{Attribute, Attributes},
     clan::Clan,
     class::{Classes, ClassInfo, ClassType},
     gender::Gender, 
@@ -65,6 +66,8 @@ pub struct Profile {
     pub hp: u32,
     /// Max MP.
     pub mp: u32,
+    /// A list of attributes and their values.
+    pub attributes: Attributes,
     /// A list of classes and their corresponding levels.
     classes: Classes,
 }
@@ -92,6 +95,7 @@ impl Profile {
             gender: char_info.gender,
             hp: hp,
             mp: mp,
+            attributes: Self::parse_attributes(&main_doc)?,
             classes: Self::parse_classes(&classes_doc)?,
         })
     }
@@ -111,6 +115,10 @@ impl Profile {
 
     pub fn class_info(&self, class: ClassType) -> Option<ClassInfo> {
         self.classes.get(class)
+    }
+
+    pub fn all_class_info(&self) -> &Classes {
+        &self.classes
     }
 
     fn parse_free_company(doc: &Document) -> Option<String> {
@@ -178,6 +186,19 @@ impl Profile {
         }
         ensure!(hp.is_some() && mp.is_some(), SearchError::InvalidData("character__param".into()));
         Ok((hp.unwrap(), mp.unwrap()))
+    }
+
+    fn parse_attributes(doc: &Document) -> Result<Attributes, Error> {
+        let block = ensure_node!(doc, Class("character__profile__data"));
+        let mut attributes = Attributes::new();
+        for item in block.find(Name("tr")) {
+            let name = ensure_node!(item, Name("span")).text();
+            let value = Attribute{
+                level: ensure_node!(item, Name("td")).text().parse::<u16>()?
+            };
+            attributes.insert(name, value);
+        }
+        Ok(attributes)
     }
 
     fn parse_classes(doc: &Document) -> Result<Classes, Error> {
