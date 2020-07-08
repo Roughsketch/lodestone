@@ -4,7 +4,7 @@ use std::str::FromStr;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Attribute {
-    level: u16
+    pub level: u16
 }
 
 /// Holds information about a profiles level in a particular class.
