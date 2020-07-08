@@ -1,3 +1,4 @@
+pub mod attribute;
 pub mod clan;
 pub mod class;
 pub mod datacenter;
