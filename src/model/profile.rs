@@ -11,11 +11,9 @@ use crate::model::{
     class::{Classes, ClassType},
     gender::Gender, 
     race::Race, 
-    server::Server
+    server::Server,
+    util::load_url
 };
-
-/// The URL base for profiles.
-static BASE_PROFILE_URL: &str = "https://na.finalfantasyxiv.com/lodestone/character/";
 
 /// Represents ways in which a search over the HTML data might go wrong.
 #[derive(Fail, Debug)]
@@ -73,9 +71,7 @@ impl Profile {
     /// If you don't have the id, it is possible to use a 
     /// `SearchBuilder` in order to find their profile directly.
     pub fn get(user_id: u32) -> Result<Self, Error> {
-        let mut response = CLIENT.get(&format!("{}{}/", BASE_PROFILE_URL, user_id)).send()?;
-        let text = response.text()?;
-        let doc = Document::from(text.as_str());
+        let doc = load_url(user_id, None)?;
 
         //  Holds the string for Race, Clan, and Gender in that order
         let char_info = Self::parse_char_info(&doc)?;
