@@ -13,7 +13,7 @@ pub struct Attributes(HashMap<String, Attribute>);
 
 impl Attributes {
     pub fn new() -> Self {
-        Self(HashMap::new())
+        Self(HashMap::with_capacity(18))
     }
     /// Adds or updates a given entry.
     pub fn insert(&mut self, name: String, value: Attribute) {
