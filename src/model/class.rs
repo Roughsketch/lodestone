@@ -102,7 +102,7 @@ impl FromStr for ClassType {
             "SUMMONER"      | "SMN" => Ok(ClassType::Summoner),
             "ARCANIST"      | "ACN" => Ok(ClassType::Arcanist),
             "RED MAGE"      | "RDM" => Ok(ClassType::RedMage),
-            "BLUE MAGE (LIMITED JOB)" | "BLU" => Ok(ClassType::BlueMage),
+            "BLUE MAGE" | "BLUE MAGE (LIMITED JOB)" | "BLU" => Ok(ClassType::BlueMage),
             "CARPENTER"     | "CRP" => Ok(ClassType::Carpenter),
             "BLACKSMITH"    | "BSM" => Ok(ClassType::Blacksmith),
             "ARMORER"       | "ARM" => Ok(ClassType::Armorer),

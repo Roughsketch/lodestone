@@ -71,20 +71,21 @@ impl Profile {
     /// If you don't have the id, it is possible to use a 
     /// `SearchBuilder` in order to find their profile directly.
     pub fn get(user_id: u32) -> Result<Self, Error> {
-        let doc = load_url(user_id, None)?;
+        let main_doc = load_url(user_id, None)?;
+        let classes_doc = load_url(user_id, Some("class_job"))?;
 
         //  Holds the string for Race, Clan, and Gender in that order
-        let char_info = Self::parse_char_info(&doc)?;
+        let char_info = Self::parse_char_info(&main_doc)?;
 
         Ok(Self {
             user_id,
-            free_company: Self::parse_free_company(&doc),
-            name: Self::parse_name(&doc)?,
-            server: Self::parse_server(&doc)?,
+            free_company: Self::parse_free_company(&main_doc),
+            name: Self::parse_name(&main_doc)?,
+            server: Self::parse_server(&main_doc)?,
             race: char_info.race,
             clan: char_info.clan,
             gender: char_info.gender,
-            classes: Self::parse_classes(&doc)?,
+            classes: Self::parse_classes(&classes_doc)?,
         })
     }
 
@@ -158,40 +159,48 @@ impl Profile {
     fn parse_classes(doc: &Document) -> Result<Classes, Error> {
         let mut classes = Classes::new();
 
-        for list in doc.find(Class("character__level__list")).take(4) {
+        for list in doc.find(Class("character__content")).take(4) {
             for item in list.find(Name("li")) {
-                let text = ensure_node!(item, Name("img")).attr("data-tooltip");
-                let level = match &*item.text() {
+                let name = ensure_node!(item, Class("character__job__name")).text();
+                let classinfo = match ensure_node!(item, Class("character__job__level")).text().as_str() {
                     "-" => None,
-                    num => Some(num.parse::<u32>()?),
+                    level => {
+                        let text = ensure_node!(item, Class("character__job__exp")).text();
+                        let mut parts = text.split(" / ");
+                        let current_xp = parts.next();
+                        ensure!(current_xp.is_some(), SearchError::InvalidData("character__job__exp".into()));
+                        let max_xp = parts.next();
+                        ensure!(max_xp.is_some(), SearchError::InvalidData("character__job__exp".into()));
+                        Some(ClassInfo{
+                            level: level.parse()?,
+                            current_xp: current_xp.unwrap().replace(",", "").parse()?,
+                            max_xp: max_xp.unwrap().replace(",", "").parse()?
+                        })
+                    }
                 };
 
-                ensure!(text.is_some(), SearchError::InvalidData("data-tooltip".into()));
-
                 //  For classes that have multiple titles (e.g., Paladin / Gladiator), grab the first one.
-                let name = text.unwrap().split(" / ").next();
-
-                ensure!(name.is_some(), SearchError::InvalidData("data-tooltip".into()));
-
-                let class = ClassType::from_str(name.unwrap())?;
+                let name = name.split(" / ").next();
+                ensure!(name.is_some(), SearchError::InvalidData("character__job__name".into()));
+                let class = ClassType::from_str(&name.unwrap())?;
 
                 //  If the class added was a secondary job, then associated that level
                 //  with its lower level counterpart as well. This makes returning the
                 //  level for a particular grouping easier at the cost of memory.
                 match class {
-                    ClassType::Paladin => classes.insert(ClassType::Gladiator, level),
-                    ClassType::Warrior => classes.insert(ClassType::Marauder, level),
-                    ClassType::WhiteMage => classes.insert(ClassType::Conjurer, level),
-                    ClassType::Monk => classes.insert(ClassType::Pugilist, level),
-                    ClassType::Dragoon => classes.insert(ClassType::Lancer, level),
-                    ClassType::Ninja => classes.insert(ClassType::Rogue, level),
-                    ClassType::Bard => classes.insert(ClassType::Archer, level),
-                    ClassType::BlackMage => classes.insert(ClassType::Thaumaturge, level),
-                    ClassType::Summoner => classes.insert(ClassType::Arcanist, level),
+                    ClassType::Paladin => classes.insert(ClassType::Gladiator, classinfo),
+                    ClassType::Warrior => classes.insert(ClassType::Marauder, classinfo),
+                    ClassType::WhiteMage => classes.insert(ClassType::Conjurer, classinfo),
+                    ClassType::Monk => classes.insert(ClassType::Pugilist, classinfo),
+                    ClassType::Dragoon => classes.insert(ClassType::Lancer, classinfo),
+                    ClassType::Ninja => classes.insert(ClassType::Rogue, classinfo),
+                    ClassType::Bard => classes.insert(ClassType::Archer, classinfo),
+                    ClassType::BlackMage => classes.insert(ClassType::Thaumaturge, classinfo),
+                    ClassType::Summoner => classes.insert(ClassType::Arcanist, classinfo),
                     _ => (),
                 }
 
-                classes.insert(class, level);
+                classes.insert(class, classinfo);
             }
         }
 
