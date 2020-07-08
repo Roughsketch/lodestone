@@ -8,7 +8,7 @@ use std::str::FromStr;
 
 use crate::model::{
     clan::Clan,
-    class::{Classes, ClassType},
+    class::{Classes, ClassInfo, ClassType},
     gender::Gender, 
     race::Race, 
     server::Server,
@@ -95,6 +95,13 @@ impl Profile {
     /// return None. If Paladin is unlocked, both Gladiator and
     /// Paladin will return the same level.
     pub fn level(&self, class: ClassType) -> Option<u32> {
+        match self.class_info(class) {
+            Some(v) => Some(v.level),
+            None => None
+        }
+    }
+
+    pub fn class_info(&self, class: ClassType) -> Option<ClassInfo> {
         self.classes.get(class)
     }
 

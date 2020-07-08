@@ -6,6 +6,13 @@ use std::str::FromStr;
 #[fail(display = "Invalid class type '{}'", _0)]
 pub struct ClassTypeParseError(String);
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ClassInfo {
+    pub level: u32,
+    pub current_xp: u64,
+    pub max_xp: u64,
+}
+
 /// An enum over the types of classes or jobs that are available.
 /// 
 /// In the case of unlocking a job, the higher level one is preferred.
@@ -114,18 +121,18 @@ impl FromStr for ClassType {
 
 /// Holds information about a profiles level in a particular class.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Classes(HashMap<ClassType, Option<u32>>);
+pub struct Classes(HashMap<ClassType, Option<ClassInfo>>);
 
 impl Classes {
     pub fn new() -> Self {
         Classes(HashMap::new())
     }
     /// Adds or updates a given entry.
-    pub fn insert(&mut self, kind: ClassType, level: Option<u32>) {
-        self.0.insert(kind, level);
+    pub fn insert(&mut self, kind: ClassType, class: Option<ClassInfo>) {
+        self.0.insert(kind, class);
     }
 
-    pub fn get(&self, class: ClassType) -> Option<u32> {
+    pub fn get(&self, class: ClassType) -> Option<ClassInfo> {
         *self.0.get(&class).unwrap_or(&None)
     }
 }
