@@ -125,12 +125,14 @@ impl Profile {
     fn parse_char_info(doc: &Document) -> Result<CharInfo, Error> {
         let char_block = {
             let mut block = ensure_node!(doc, Class("character-block__name")).inner_html();
+            block = block.replace(" ", "_");
             block = block.replace("<br>", " ");
-            block.replace("/", "")
+            block.replace("_/_", " ")
         };
 
         let char_info = char_block
             .split_whitespace()
+            .map(|e| e.replace("_", " "))
             .map(|e| e.into())
             .collect::<Vec<String>>();
 
