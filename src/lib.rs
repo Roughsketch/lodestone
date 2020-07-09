@@ -36,11 +36,16 @@ mod tests {
     }
 
     #[test]
-    fn can_get_attributes() {
-        use crate::model::class::ClassType;
-        use crate::model::datacenter::Datacenter;
-        use crate::model::gc::GrandCompany;
-        use crate::model::language::Language;
+    fn profile_is_correct() {
+        use crate::model::{
+            clan::Clan,
+            class::ClassType,
+            datacenter::Datacenter,
+            gc::GrandCompany,
+            gender::Gender,
+            language::Language,
+            race::Race,
+        };
         use crate::search::SearchBuilder;
 
         let profiles = SearchBuilder::new()
@@ -55,6 +60,11 @@ mod tests {
 
         let strawberry = profiles.get(0).unwrap();
 
+        assert_eq!(strawberry.name, "Strawberry Custard");
+
+        assert_eq!(strawberry.race, Race::Lalafell);
+        assert_eq!(strawberry.clan, Clan::Plainsfolk);
+        assert_eq!(strawberry.gender, Gender::Female);
         assert_eq!(strawberry.level(ClassType::BlackMage), Some(70));
 
         assert_eq!(strawberry.hp, 45835);
