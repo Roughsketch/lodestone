@@ -218,8 +218,14 @@ impl Profile {
                         ensure!(max_xp.is_some(), SearchError::InvalidData("character__job__exp".into()));
                         Some(ClassInfo{
                             level: level.parse()?,
-                            current_xp: current_xp.unwrap().replace(",", "").parse()?,
-                            max_xp: max_xp.unwrap().replace(",", "").parse()?
+                            current_xp: match current_xp.unwrap() {
+                                "--" => None,
+                                value => Some(value.replace(",", "").parse()?)
+                            },
+                            max_xp: match max_xp.unwrap() {
+                                "--" => None,
+                                value => Some(value.replace(",", "").parse()?)
+                            },
                         })
                     }
                 };
