@@ -2,8 +2,6 @@ use failure::{Error, Fail, ensure};
 use select::document::Document;
 use select::predicate::{Class, Name};
 
-use crate::CLIENT;
-
 use std::str::FromStr;
 
 use crate::model::{
