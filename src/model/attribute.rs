@@ -1,6 +1,4 @@
-use failure::Fail;
 use std::collections::HashMap;
-use std::str::FromStr;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Attribute {
