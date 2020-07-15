@@ -9,8 +9,8 @@ pub struct ClassTypeParseError(String);
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ClassInfo {
     pub level: u32,
-    pub current_xp: u64,
-    pub max_xp: u64,
+    pub current_xp: Option<u64>,
+    pub max_xp: Option<u64>,
 }
 
 /// An enum over the types of classes or jobs that are available.
