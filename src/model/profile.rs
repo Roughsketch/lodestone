@@ -91,8 +91,8 @@ impl Profile {
             race: char_info.race,
             clan: char_info.clan,
             gender: char_info.gender,
-            hp: hp,
-            mp: mp,
+            hp,
+            mp,
             attributes: Self::parse_attributes(&main_doc)?,
             classes: Self::parse_classes(&classes_doc)?,
         })
@@ -178,9 +178,9 @@ impl Profile {
         let mut hp = None;
         let mut mp = None;
         for item in attr_block.find(Name("li")) {
-            if item.find(Class("character__param__text__hp--en-us")).collect::<Vec<_>>().len() == 1 {
+            if item.find(Class("character__param__text__hp--en-us")).count() == 1 {
                 hp = Some(ensure_node!(item, Name("span")).text().parse::<u32>()?);
-            } else if item.find(Class("character__param__text__mp--en-us")).collect::<Vec<_>>().len() == 1 {
+            } else if item.find(Class("character__param__text__mp--en-us")).count() == 1 {
                 mp = Some(ensure_node!(item, Name("span")).text().parse::<u32>()?);
             } else {
                 continue

@@ -67,7 +67,7 @@ impl SearchBuilder {
 
         let url = url.trim_end_matches('&');
 
-        let mut response = CLIENT.get(url).send()?;
+        let response = CLIENT.get(url).send()?;
         let text = response.text()?;
         let doc = Document::from(text.as_str());
 

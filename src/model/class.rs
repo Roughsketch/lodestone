@@ -121,7 +121,7 @@ impl FromStr for ClassType {
 }
 
 /// Holds information about a profile's level/XP in a particular class.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Classes(HashMap<ClassType, Option<ClassInfo>>);
 
 impl Classes {
