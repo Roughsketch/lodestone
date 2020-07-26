@@ -2,20 +2,17 @@ use failure::{Error, Fail, ensure};
 use select::document::Document;
 use select::predicate::{Class, Name};
 
-use crate::CLIENT;
-
 use std::str::FromStr;
 
 use crate::model::{
+    attribute::{Attribute, Attributes},
     clan::Clan,
-    class::{Classes, ClassType},
+    class::{Classes, ClassInfo, ClassType},
     gender::Gender, 
     race::Race, 
-    server::Server
+    server::Server,
+    util::load_url
 };
-
-/// The URL base for profiles.
-static BASE_PROFILE_URL: &str = "https://na.finalfantasyxiv.com/lodestone/character/";
 
 /// Represents ways in which a search over the HTML data might go wrong.
 #[derive(Fail, Debug)]
@@ -63,6 +60,12 @@ pub struct Profile {
     pub clan: Clan,
     /// Character's gender.
     pub gender: Gender,
+    /// Max HP.
+    pub hp: u32,
+    /// Max MP.
+    pub mp: u32,
+    /// A list of attributes and their values.
+    pub attributes: Attributes,
     /// A list of classes and their corresponding levels.
     classes: Classes,
 }
@@ -73,22 +76,25 @@ impl Profile {
     /// If you don't have the id, it is possible to use a 
     /// `SearchBuilder` in order to find their profile directly.
     pub fn get(user_id: u32) -> Result<Self, Error> {
-        let mut response = CLIENT.get(&format!("{}{}/", BASE_PROFILE_URL, user_id)).send()?;
-        let text = response.text()?;
-        let doc = Document::from(text.as_str());
+        let main_doc = load_url(user_id, None)?;
+        let classes_doc = load_url(user_id, Some("class_job"))?;
 
         //  Holds the string for Race, Clan, and Gender in that order
-        let char_info = Self::parse_char_info(&doc)?;
+        let char_info = Self::parse_char_info(&main_doc)?;
+        let (hp, mp) = Self::parse_char_param(&main_doc)?;
 
         Ok(Self {
             user_id,
-            free_company: Self::parse_free_company(&doc),
-            name: Self::parse_name(&doc)?,
-            server: Self::parse_server(&doc)?,
+            free_company: Self::parse_free_company(&main_doc),
+            name: Self::parse_name(&main_doc)?,
+            server: Self::parse_server(&main_doc)?,
             race: char_info.race,
             clan: char_info.clan,
             gender: char_info.gender,
-            classes: Self::parse_classes(&doc)?,
+            hp: hp,
+            mp: mp,
+            attributes: Self::parse_attributes(&main_doc)?,
+            classes: Self::parse_classes(&classes_doc)?,
         })
     }
 
@@ -99,7 +105,20 @@ impl Profile {
     /// return None. If Paladin is unlocked, both Gladiator and
     /// Paladin will return the same level.
     pub fn level(&self, class: ClassType) -> Option<u32> {
+        match self.class_info(class) {
+            Some(v) => Some(v.level),
+            None => None
+        }
+    }
+
+    /// Gets this profile's data for a given class
+    pub fn class_info(&self, class: ClassType) -> Option<ClassInfo> {
         self.classes.get(class)
+    }
+
+    /// Borrows the full map of classes, e.g. for iteration in calling code
+    pub fn all_class_info(&self) -> &Classes {
+        &self.classes
     }
 
     fn parse_free_company(doc: &Document) -> Option<String> {
@@ -154,43 +173,87 @@ impl Profile {
         }
     }
 
+    fn parse_char_param(doc: &Document) -> Result<(u32, u32), Error> {
+        let attr_block = ensure_node!(doc, Class("character__param"));
+        let mut hp = None;
+        let mut mp = None;
+        for item in attr_block.find(Name("li")) {
+            if item.find(Class("character__param__text__hp--en-us")).collect::<Vec<_>>().len() == 1 {
+                hp = Some(ensure_node!(item, Name("span")).text().parse::<u32>()?);
+            } else if item.find(Class("character__param__text__mp--en-us")).collect::<Vec<_>>().len() == 1 {
+                mp = Some(ensure_node!(item, Name("span")).text().parse::<u32>()?);
+            } else {
+                continue
+            }
+        }
+        ensure!(hp.is_some() && mp.is_some(), SearchError::InvalidData("character__param".into()));
+        Ok((hp.unwrap(), mp.unwrap()))
+    }
+
+    fn parse_attributes(doc: &Document) -> Result<Attributes, Error> {
+        let block = ensure_node!(doc, Class("character__profile__data"));
+        let mut attributes = Attributes::new();
+        for item in block.find(Name("tr")) {
+            let name = ensure_node!(item, Name("span")).text();
+            let value = Attribute{
+                level: ensure_node!(item, Name("td")).text().parse::<u16>()?
+            };
+            attributes.insert(name, value);
+        }
+        Ok(attributes)
+    }
+
     fn parse_classes(doc: &Document) -> Result<Classes, Error> {
         let mut classes = Classes::new();
 
-        for list in doc.find(Class("character__level__list")).take(4) {
+        for list in doc.find(Class("character__content")).take(4) {
             for item in list.find(Name("li")) {
-                let text = ensure_node!(item, Name("img")).attr("data-tooltip");
-                let level = match &*item.text() {
+                let name = ensure_node!(item, Class("character__job__name")).text();
+                let classinfo = match ensure_node!(item, Class("character__job__level")).text().as_str() {
                     "-" => None,
-                    num => Some(num.parse::<u32>()?),
+                    level => {
+                        let text = ensure_node!(item, Class("character__job__exp")).text();
+                        let mut parts = text.split(" / ");
+                        let current_xp = parts.next();
+                        ensure!(current_xp.is_some(), SearchError::InvalidData("character__job__exp".into()));
+                        let max_xp = parts.next();
+                        ensure!(max_xp.is_some(), SearchError::InvalidData("character__job__exp".into()));
+                        Some(ClassInfo{
+                            level: level.parse()?,
+                            current_xp: match current_xp.unwrap() {
+                                "--" => None,
+                                value => Some(value.replace(",", "").parse()?)
+                            },
+                            max_xp: match max_xp.unwrap() {
+                                "--" => None,
+                                value => Some(value.replace(",", "").parse()?)
+                            },
+                        })
+                    }
                 };
 
-                ensure!(text.is_some(), SearchError::InvalidData("data-tooltip".into()));
-
                 //  For classes that have multiple titles (e.g., Paladin / Gladiator), grab the first one.
-                let name = text.unwrap().split(" / ").next();
-
-                ensure!(name.is_some(), SearchError::InvalidData("data-tooltip".into()));
-
-                let class = ClassType::from_str(name.unwrap())?;
+                let name = name.split(" / ").next();
+                ensure!(name.is_some(), SearchError::InvalidData("character__job__name".into()));
+                let class = ClassType::from_str(&name.unwrap())?;
 
                 //  If the class added was a secondary job, then associated that level
                 //  with its lower level counterpart as well. This makes returning the
                 //  level for a particular grouping easier at the cost of memory.
                 match class {
-                    ClassType::Paladin => classes.insert(ClassType::Gladiator, level),
-                    ClassType::Warrior => classes.insert(ClassType::Marauder, level),
-                    ClassType::WhiteMage => classes.insert(ClassType::Conjurer, level),
-                    ClassType::Monk => classes.insert(ClassType::Pugilist, level),
-                    ClassType::Dragoon => classes.insert(ClassType::Lancer, level),
-                    ClassType::Ninja => classes.insert(ClassType::Rogue, level),
-                    ClassType::Bard => classes.insert(ClassType::Archer, level),
-                    ClassType::BlackMage => classes.insert(ClassType::Thaumaturge, level),
-                    ClassType::Summoner => classes.insert(ClassType::Arcanist, level),
+                    ClassType::Paladin => classes.insert(ClassType::Gladiator, classinfo),
+                    ClassType::Warrior => classes.insert(ClassType::Marauder, classinfo),
+                    ClassType::WhiteMage => classes.insert(ClassType::Conjurer, classinfo),
+                    ClassType::Monk => classes.insert(ClassType::Pugilist, classinfo),
+                    ClassType::Dragoon => classes.insert(ClassType::Lancer, classinfo),
+                    ClassType::Ninja => classes.insert(ClassType::Rogue, classinfo),
+                    ClassType::Bard => classes.insert(ClassType::Archer, classinfo),
+                    ClassType::BlackMage => classes.insert(ClassType::Thaumaturge, classinfo),
+                    ClassType::Summoner => classes.insert(ClassType::Arcanist, classinfo),
                     _ => (),
                 }
 
-                classes.insert(class, level);
+                classes.insert(class, classinfo);
             }
         }
 
