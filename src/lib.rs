@@ -5,7 +5,7 @@ pub mod search;
 
 // Lazy static client to avoid creating new ones every time
 lazy_static::lazy_static! {
-    static ref CLIENT: reqwest::Client = reqwest::Client::new();
+    static ref CLIENT: reqwest::blocking::Client = reqwest::blocking::Client::new();
 }
 
 #[cfg(test)]
