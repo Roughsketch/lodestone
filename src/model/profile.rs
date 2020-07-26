@@ -111,10 +111,12 @@ impl Profile {
         }
     }
 
+    /// Gets this profile's data for a given class
     pub fn class_info(&self, class: ClassType) -> Option<ClassInfo> {
         self.classes.get(class)
     }
 
+    /// Borrows the full map of classes, e.g. for iteration in calling code
     pub fn all_class_info(&self) -> &Classes {
         &self.classes
     }

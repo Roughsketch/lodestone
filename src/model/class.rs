@@ -6,6 +6,7 @@ use std::str::FromStr;
 #[fail(display = "Invalid class type '{}'", _0)]
 pub struct ClassTypeParseError(String);
 
+/// Contains all the data for a class/job insofar as it pertains to a specific character
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ClassInfo {
     pub level: u32,
@@ -119,7 +120,7 @@ impl FromStr for ClassType {
     }
 }
 
-/// Holds information about a profiles level in a particular class.
+/// Holds information about a profile's level/XP in a particular class.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Classes(HashMap<ClassType, Option<ClassInfo>>);
 
@@ -132,6 +133,7 @@ impl Classes {
         self.0.insert(kind, class);
     }
 
+    /// Gets a class by name, if found
     pub fn get(&self, class: ClassType) -> Option<ClassInfo> {
         *self.0.get(&class).unwrap_or(&None)
     }

@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 
+/// Contains all data about an attribute; currently, this only consists of the attribute's level
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Attribute {
+    /// Level of a given attribute
     pub level: u16
 }
 
@@ -18,6 +20,7 @@ impl Attributes {
         self.0.insert(name, value);
     }
 
+    /// Borrows an attribute by name, if found
     pub fn get(&self, name: &str) -> Option<&Attribute> {
         self.0.get(name)
     }
