@@ -58,6 +58,12 @@ pub struct Profile {
     pub free_company: Option<String>,
     /// The character's in-game name.
     pub name: String,
+    /// The character's nameday
+    pub nameday: String,
+    /// The character's guardian
+    pub guardian: String,
+    /// The character's city state
+    pub city_state: String,
     /// Which server the character is in.
     pub server: Server,
     /// What race the character is.
@@ -93,6 +99,9 @@ impl Profile {
             user_id,
             free_company: Self::parse_free_company(&main_doc),
             name: Self::parse_name(&main_doc)?,
+            nameday: Self::parse_nameday(&main_doc)?,
+            guardian: Self::parse_guardian(&main_doc)?,
+            city_state: Self::parse_city_state(&main_doc)?,
             server: Self::parse_server(&main_doc)?,
             race: char_info.race,
             clan: char_info.clan,
@@ -136,6 +145,18 @@ impl Profile {
 
     fn parse_name(doc: &Document) -> Result<String, Error> {
         Ok(ensure_node!(doc, Class("frame__chara__name")).text())
+    }
+
+    fn parse_nameday(doc: &Document) -> Result<String, Error> {
+        Ok(ensure_node!(doc, Class("character-block__birth")).text())
+    }
+
+    fn parse_guardian(doc: &Document) -> Result<String, Error> {
+        Ok(ensure_node!(doc, Class("character-block__name"), 1).text())
+    }
+
+    fn parse_city_state(doc: &Document) -> Result<String, Error> {
+        Ok(ensure_node!(doc, Class("character-block__name"), 2).text())
     }
 
     fn parse_server(doc: &Document) -> Result<Server, Error> {

@@ -61,6 +61,9 @@ mod tests {
         let strawberry = profiles.get(0).unwrap();
 
         assert_eq!(strawberry.name, "Strawberry Custard");
+        assert_eq!(strawberry.nameday, "3rd Sun of the 1st Umbral Moon");
+        assert_eq!(strawberry.guardian, "Halone, the Fury");
+        assert_eq!(strawberry.city_state, "Limsa Lominsa");
 
         assert_eq!(strawberry.race, Race::Lalafell);
         assert_eq!(strawberry.clan, Clan::Plainsfolk);
