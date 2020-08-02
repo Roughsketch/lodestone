@@ -40,7 +40,13 @@ macro_rules! ensure_node {
         let node = $doc.find($search).next();
         ensure!(node.is_some(), SearchError::NodeNotFound(stringify!($search).to_string()));
         node.unwrap()
-    }}
+    }};
+    
+    ($doc:ident, $search:expr, $nth:expr) => {{
+        let node = $doc.find($search).nth($nth);
+        ensure!(node.is_some(), SearchError::NodeNotFound(stringify!($search).to_string() + "(" + stringify!($nth) + ")"));
+        node.unwrap()
+    }};
 }
 
 /// Holds all the data for a profile retrieved via Lodestone.
