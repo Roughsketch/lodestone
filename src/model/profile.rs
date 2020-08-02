@@ -37,9 +37,7 @@ struct CharInfo {
 /// the found node.
 macro_rules! ensure_node {
     ($doc:ident, $search:expr) => {{
-        let node = $doc.find($search).next();
-        ensure!(node.is_some(), SearchError::NodeNotFound(stringify!($search).to_string()));
-        node.unwrap()
+        ensure_node!($doc, $search, 0)
     }};
     
     ($doc:ident, $search:expr, $nth:expr) => {{
