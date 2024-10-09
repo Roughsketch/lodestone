@@ -14,6 +14,8 @@ pub enum Race {
     Lalafell,
     Miqote,
     Roegadyn,
+    Hrothgar,
+    Viera,
 }
 
 impl FromStr for Race {
@@ -27,6 +29,8 @@ impl FromStr for Race {
             "LALAFELL" => Ok(Race::Lalafell),
             "MIQO'TE" => Ok(Race::Miqote),
             "ROEGADYN" => Ok(Race::Roegadyn),
+            "HROTHGAR" => Ok(Race::Hrothgar),
+            "VIERA" => Ok(Race::Viera),
             x => Err(RaceParseError(x.into())),
         }
     }

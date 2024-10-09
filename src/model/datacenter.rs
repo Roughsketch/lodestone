@@ -16,6 +16,8 @@ pub enum Datacenter {
     Light,
     Mana,
     Primal,
+    Materia,
+    Shadow,
 }
 
 /// Case insensitive FromStr impl for datacenters.
@@ -32,6 +34,8 @@ impl FromStr for Datacenter {
             "LIGHT" => Ok(Datacenter::Light),
             "MANA" => Ok(Datacenter::Mana),
             "PRIMAL" => Ok(Datacenter::Primal),
+            "MATERIA" => Ok(Datacenter::Materia),
+            "SHADOW" => Ok(Datacenter::Shadow),
             x => Err(DatacenterParseError(x.into())),
         }
     }
@@ -48,6 +52,8 @@ impl fmt::Display for Datacenter {
             Datacenter::Light => "Light",
             Datacenter::Mana => "Mana",
             Datacenter::Primal => "Primal",
+            Datacenter::Materia => "Materia",
+            Datacenter::Shadow => "Shadow",
         };
 
         write!(f, "{}", datacenter)

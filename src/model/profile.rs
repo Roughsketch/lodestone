@@ -54,6 +54,8 @@ pub struct Profile {
     pub user_id: u32,
     /// The profile's associated Free Company
     pub free_company: Option<String>,
+    /// The profile's title
+    pub title: Option<String>,
     /// The character's in-game name.
     pub name: String,
     /// The character's nameday
@@ -96,6 +98,7 @@ impl Profile {
         Ok(Self {
             user_id,
             free_company: Self::parse_free_company(&main_doc),
+            title: Self::parse_title(&main_doc),
             name: Self::parse_name(&main_doc)?,
             nameday: Self::parse_nameday(&main_doc)?,
             guardian: Self::parse_guardian(&main_doc)?,
@@ -135,6 +138,15 @@ impl Profile {
     }
 
     fn parse_free_company(doc: &Document) -> Option<String> {
+        match doc.find(Class("character__freecompany__name")).next() {
+            Some(node) => Some(
+                node.text().strip_prefix("Free Company").unwrap_or(&node.text()).to_string()
+            ),
+            None => None,
+        }
+    }
+
+    fn parse_title(doc: &Document) -> Option<String> {
         match doc.find(Class("frame__chara__title")).next() {
             Some(node) => Some(node.text()),
             None => None,

@@ -26,6 +26,12 @@ pub enum Clan {
     //  Roegadyn
     SeaWolf,
     Hellsguard,
+    //   Viera
+    Veena,
+    Rava,
+    //   Hrothgar
+    TheLost,
+    Helions,
 }
 
 impl FromStr for Clan {
@@ -45,6 +51,10 @@ impl FromStr for Clan {
             "KEEPER OF THE MOON" => Ok(Clan::KeeperOfTheMoon),
             "SEA WOLF" => Ok(Clan::SeaWolf),
             "HELLSGUARD" => Ok(Clan::Hellsguard),
+            "VEENA" => Ok(Clan::Veena),
+            "RAVA" => Ok(Clan::Rava),
+            "THE LOST" => Ok(Clan::TheLost),
+            "HELIONS" => Ok(Clan::Helions),
             x => Err(ClanParseError(x.into())),
         }
     }
