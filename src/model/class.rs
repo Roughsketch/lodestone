@@ -103,8 +103,8 @@ impl FromStr for ClassType {
             "LANCER"        | "LNC" => Ok(ClassType::Lancer),
             "NINJA"         | "NIN" => Ok(ClassType::Ninja),
             "ROGUE"         | "ROG" => Ok(ClassType::Rogue),
-            "SAMURAI"       | "RPR" => Ok(ClassType::Samurai),
-            "REAPER"        | "SAM" => Ok(ClassType::Reaper),
+            "SAMURAI"       | "SAM" => Ok(ClassType::Samurai),
+            "REAPER"        | "RPR" => Ok(ClassType::Reaper),
             "VIPER"         | "VPR" => Ok(ClassType::Viper),
             //   Phys Range
             "BARD"          | "BRD" => Ok(ClassType::Bard),
