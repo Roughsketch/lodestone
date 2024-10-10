@@ -134,10 +134,7 @@ impl FromStr for Server {
     type Err = ServerParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-
-       let fixed_world_name: &str = &*s.split_whitespace().next().unwrap();
-        match &*fixed_world_name.to_uppercase() {
-            
+        match &*s.to_uppercase() {
             /// NA
             //  Aether
             "ADAMANTOISE" => Ok(Server::Adamantoise),
