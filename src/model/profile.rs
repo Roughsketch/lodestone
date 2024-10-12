@@ -11,6 +11,7 @@ use crate::model::{
     gender::Gender, 
     race::Race, 
     server::Server,
+    datacenter::Datacenter,
     util::load_url
 };
 
@@ -30,6 +31,11 @@ struct CharInfo {
     race: Race,
     clan: Clan,
     gender: Gender,
+}
+
+struct HomeInfo {
+    server: Server,
+    datacenter: Datacenter,
 }
 
 /// Takes a Document and a search expression, and will return
@@ -54,6 +60,8 @@ pub struct Profile {
     pub user_id: u32,
     /// The profile's associated Free Company
     pub free_company: Option<String>,
+    /// The profile's title
+    pub title: Option<String>,
     /// The character's in-game name.
     pub name: String,
     /// The character's nameday
@@ -64,6 +72,8 @@ pub struct Profile {
     pub city_state: String,
     /// Which server the character is in.
     pub server: Server,
+    /// Which datacenter the character is in.
+    pub datacenter: Datacenter,
     /// What race the character is.
     pub race: Race,
     /// One of the two clans associated with their race.
@@ -91,16 +101,22 @@ impl Profile {
 
         //  Holds the string for Race, Clan, and Gender in that order
         let char_info = Self::parse_char_info(&main_doc)?;
+
+        //  Holds the string for Server, Datacenter in that order
+        let home_info = Self::parse_home_info(&main_doc)?;
+
         let (hp, mp) = Self::parse_char_param(&main_doc)?;
 
         Ok(Self {
             user_id,
             free_company: Self::parse_free_company(&main_doc),
+            title: Self::parse_title(&main_doc),
             name: Self::parse_name(&main_doc)?,
             nameday: Self::parse_nameday(&main_doc)?,
             guardian: Self::parse_guardian(&main_doc)?,
             city_state: Self::parse_city_state(&main_doc)?,
-            server: Self::parse_server(&main_doc)?,
+            server: home_info.server,
+            datacenter: home_info.datacenter,
             race: char_info.race,
             clan: char_info.clan,
             gender: char_info.gender,
@@ -135,6 +151,15 @@ impl Profile {
     }
 
     fn parse_free_company(doc: &Document) -> Option<String> {
+        match doc.find(Class("character__freecompany__name")).next() {
+            Some(node) => Some(
+                node.text().strip_prefix("Free Company").unwrap_or(&node.text()).to_string()
+            ),
+            None => None,
+        }
+    }
+
+    fn parse_title(doc: &Document) -> Option<String> {
         match doc.find(Class("frame__chara__title")).next() {
             Some(node) => Some(node.text()),
             None => None,
@@ -157,13 +182,23 @@ impl Profile {
         Ok(ensure_node!(doc, Class("character-block__name"), 2).text())
     }
 
-    fn parse_server(doc: &Document) -> Result<Server, Error> {
+    fn parse_home_info(doc: &Document) -> Result<HomeInfo, Error> {
         let text = ensure_node!(doc, Class("frame__chara__world")).text();
-        let server = text.split("\u{A0}").next();
+        let mut server = text.split("\u{A0}").next();
 
-        ensure!(server.is_some(), SearchError::InvalidData("Could not find server string.".into()));
+        ensure!(server.is_some(), SearchError::InvalidData("Could not find server/datacenter string.".into()));
 
-        Ok(Server::from_str(&server.unwrap())?)
+        // String comes in format Server [Datacenter]
+        let home_info = server
+            .unwrap()
+            .split_whitespace()
+            .map(|e| e.replace(&['[', ']'], ""))
+            .collect::<Vec<String>>();
+            
+        Ok(HomeInfo {
+            server: Server::from_str(&home_info[0])?,
+            datacenter: Datacenter::from_str(&home_info[1])?,
+        })
     }
 
     fn parse_char_info(doc: &Document) -> Result<CharInfo, Error> {
@@ -205,13 +240,17 @@ impl Profile {
         for item in attr_block.find(Name("li")) {
             if item.find(Class("character__param__text__hp--en-us")).count() == 1 {
                 hp = Some(ensure_node!(item, Name("span")).text().parse::<u32>()?);
-            } else if item.find(Class("character__param__text__mp--en-us")).count() == 1 {
+            } else if item.find(Class("character__param__text__mp--en-us")).count() == 1 ||
+                      item.find(Class("character__param__text__gp--en-us")).count() == 1 ||
+                      item.find(Class("character__param__text__cp--en-us")).count() == 1 {
+                // doh/dol jobs change the css now to show GP/CP. if any is present, store as mp
                 mp = Some(ensure_node!(item, Name("span")).text().parse::<u32>()?);
             } else {
                 continue
             }
         }
         ensure!(hp.is_some() && mp.is_some(), SearchError::InvalidData("character__param".into()));
+
         Ok((hp.unwrap(), mp.unwrap()))
     }
 

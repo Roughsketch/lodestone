@@ -33,7 +33,8 @@ pub enum ClassType {
     Conjurer,
     Scholar,
     Astrologian,
-    //  Damage
+    Sage,
+    //  Melee
     Monk,
     Pugilist,
     Dragoon,
@@ -41,17 +42,22 @@ pub enum ClassType {
     Ninja,
     Rogue,
     Samurai,
+    Reaper,
+    Viper,
+    //   Phys Range
     Bard,
     Archer,
     Machinist,
     Dancer,
+    //   Caster
     BlackMage,
     Thaumaturge,
     Summoner,
     Arcanist,
     RedMage,
+    Pictomancer,
     BlueMage,
-    //  Crafting
+    //  DoH
     Carpenter,
     Blacksmith,
     Armorer,
@@ -60,7 +66,7 @@ pub enum ClassType {
     Weaver,
     Alchemist,
     Culinarian,
-    //  Gathering
+    //  DoL
     Miner,
     Botanist,
     Fisher,
@@ -77,16 +83,20 @@ impl FromStr for ClassType {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match &*s.to_uppercase() {
+            //   Tank
             "PALADIN"       | "PLD" => Ok(ClassType::Paladin),
             "GLADIATOR"     | "GLD" => Ok(ClassType::Gladiator),
             "WARRIOR"       | "WAR" => Ok(ClassType::Warrior),
             "MARAUDER"      | "MRD" => Ok(ClassType::Marauder),
             "DARK KNIGHT"   | "DRK" => Ok(ClassType::DarkKnight),
             "GUNBREAKER"    | "GNB" => Ok(ClassType::Gunbreaker),
+            //   Healer
             "WHITE MAGE"    | "WHM" => Ok(ClassType::WhiteMage),
             "CONJURER"      | "CNJ" => Ok(ClassType::Conjurer),
             "SCHOLAR"       | "SCH" => Ok(ClassType::Scholar),
             "ASTROLOGIAN"   | "AST" => Ok(ClassType::Astrologian),
+            "SAGE"          | "SGE" => Ok(ClassType::Sage),
+            //   Melee
             "MONK"          | "MNK" => Ok(ClassType::Monk),
             "PUGILIST"      | "PUG" => Ok(ClassType::Pugilist),
             "DRAGOON"       | "DRG" => Ok(ClassType::Dragoon),
@@ -94,16 +104,22 @@ impl FromStr for ClassType {
             "NINJA"         | "NIN" => Ok(ClassType::Ninja),
             "ROGUE"         | "ROG" => Ok(ClassType::Rogue),
             "SAMURAI"       | "SAM" => Ok(ClassType::Samurai),
+            "REAPER"        | "RPR" => Ok(ClassType::Reaper),
+            "VIPER"         | "VPR" => Ok(ClassType::Viper),
+            //   Phys Range
             "BARD"          | "BRD" => Ok(ClassType::Bard),
             "ARCHER"        | "ARC" => Ok(ClassType::Archer),
             "MACHINIST"     | "MCH" => Ok(ClassType::Machinist),
             "DANCER"        | "DNC" => Ok(ClassType::Dancer),
+            //   Caster
             "BLACK MAGE"    | "BLM" => Ok(ClassType::BlackMage),
             "THAUMATURGE"   | "THM" => Ok(ClassType::Thaumaturge),
             "SUMMONER"      | "SMN" => Ok(ClassType::Summoner),
             "ARCANIST"      | "ACN" => Ok(ClassType::Arcanist),
             "RED MAGE"      | "RDM" => Ok(ClassType::RedMage),
+            "PICTOMANCER"   | "PCT" => Ok(ClassType::Pictomancer),
             "BLUE MAGE" | "BLUE MAGE (LIMITED JOB)" | "BLU" => Ok(ClassType::BlueMage),
+            //   DoH
             "CARPENTER"     | "CRP" => Ok(ClassType::Carpenter),
             "BLACKSMITH"    | "BSM" => Ok(ClassType::Blacksmith),
             "ARMORER"       | "ARM" => Ok(ClassType::Armorer),
@@ -112,6 +128,7 @@ impl FromStr for ClassType {
             "WEAVER"        | "WVR" => Ok(ClassType::Weaver),
             "ALCHEMIST"     | "ALC" => Ok(ClassType::Alchemist),
             "CULINARIAN"    | "CUL" => Ok(ClassType::Culinarian),
+            //   DoL
             "MINER"         | "MIN" => Ok(ClassType::Miner),
             "BOTANIST"      | "BTN" => Ok(ClassType::Botanist),
             "FISHER"        | "FSH" => Ok(ClassType::Fisher),

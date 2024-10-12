@@ -11,41 +11,7 @@ pub struct ServerParseError(String);
 /// and the order should be identical.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum Server {
-    //  Elemental
-    Aegis,
-    Atomos,
-    Carbuncle,
-    Garuda,
-    Gungnir,
-    Kujata,
-    Ramuh,
-    Tonberry,
-    Typhon,
-    Unicorn,
-    //  Gaia
-    Alexander,
-    Bahamut,
-    Durandal,
-    Fenrir,
-    Ifrit,
-    Ridill,
-    Tiamat,
-    Ultima,
-    Valefor,
-    Yojimbo,
-    Zeromus,
-    //  Mana
-    Aniuma,
-    Asura,
-    Belias,
-    Chocobo,
-    Hades,
-    Ixion,
-    Mandragora,
-    Masamune,
-    Pandaemonium,
-    Shinryu,
-    Titan,
+    /// NA
     //  Aether
     Adamantoise,
     Cactuar,
@@ -55,6 +21,7 @@ pub enum Server {
     Midgardsormr,
     Sargatanas,
     Siren,
+
     //  Primal
     Behemoth,
     Excalibur,
@@ -64,7 +31,8 @@ pub enum Server {
     Lamia,
     Leviathan,
     Ultros,
-    //  Crystal
+
+    // Crystal
     Balmung,
     Brynhildr,
     Coeurl,
@@ -73,20 +41,92 @@ pub enum Server {
     Malboro,
     Mateus,
     Zalera,
+    
+    // Dynamis
+    Halicarnassus,
+    Maduin,
+    Marilith,
+    Seraph,
+    Cuchulainn,
+    Kraken,
+    Rafflesia,
+    Golem,
+
+    /// EU
     //  Chaos
     Cerberus,
     Louisoix,
     Moogle,
     Omega,
+    Phantom,
     Ragnarok,
+    Sagittarius,
     Spriggan,
+
     //  Light
+    Alpha,
     Lich,
     Odin,
     Phoenix,
+    Raiden,
     Shiva,
     Twintania,
     Zodiark,
+
+    //  Shadow (Temp DC for dawntrail launch)
+    Innocence,
+    Pixie,
+    Titania,
+    Tycoon,
+
+    /// OCE
+    //  Materia
+    Bismarck,
+    Ravana,
+    Sephirot,
+    Sophia,
+    Zurvan,
+
+    /// JP
+    //  Elemental
+    Aegis,
+    Atomos,
+    Carbuncle,
+    Garuda,
+    Gungnir,
+    Kujata,
+    Tonberry,
+    Typhon,
+
+    //  Gaia
+    Alexander,
+    Bahamut,
+    Durandal,
+    Fenrir,
+    Ifrit,
+    Ridill,
+    Tiamat,
+    Ultima,
+
+    //  Mana
+    Anima,
+    Asura,
+    Chocobo,
+    Hades,
+    Ixion,
+    Masamune,
+    Pandaemonium,
+    Titan,
+
+    //  Meteor
+    Belias,
+    Mandragora,
+    Ramuh,
+    Shinryu,
+    Unicorn,
+    Valefor,
+    Yojimbo,
+    Zeromus,
 }
 
 /// Case insensitive FromStr impl for servers.
@@ -95,6 +135,83 @@ impl FromStr for Server {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match &*s.to_uppercase() {
+            /// NA
+            //  Aether
+            "ADAMANTOISE" => Ok(Server::Adamantoise),
+            "CACTUAR" => Ok(Server::Cactuar),
+            "FAERIE" => Ok(Server::Faerie),
+            "GILGAMESH" => Ok(Server::Gilgamesh),
+            "JENOVA" => Ok(Server::Jenova),
+            "MIDGARDSORMR" => Ok(Server::Midgardsormr),
+            "SARGATANAS" => Ok(Server::Sargatanas),
+            "SIREN" => Ok(Server::Siren),
+
+            //  Primal
+            "BEHEMOTH" => Ok(Server::Behemoth),
+            "EXCALIBUR" => Ok(Server::Excalibur),
+            "EXODUS" => Ok(Server::Exodus),
+            "FAMFRIT" => Ok(Server::Famfrit),
+            "HYPERION" => Ok(Server::Hyperion),
+            "LAMIA" => Ok(Server::Lamia),
+            "LEVIATHAN" => Ok(Server::Leviathan),
+            "ULTROS" => Ok(Server::Ultros),
+
+            // Crystal
+            "BALMUNG" => Ok(Server::Balmung),
+            "BRYNHILDR" => Ok(Server::Brynhildr),
+            "COEURL" => Ok(Server::Coeurl),
+            "DIABOLOS" => Ok(Server::Diabolos),
+            "GOBLIN" => Ok(Server::Goblin),
+            "MALBORO" => Ok(Server::Malboro),
+            "MATEUS" => Ok(Server::Mateus),
+            "ZALERA" => Ok(Server::Zalera),
+            
+            // Dynamis
+            "HALICARNASSUS" => Ok(Server::Halicarnassus),
+            "MADUIN" => Ok(Server::Maduin),
+            "MARILITH" => Ok(Server::Marilith),
+            "SERAPH" => Ok(Server::Seraph),
+            "CUCHULAINN" => Ok(Server::Cuchulainn),
+            "KRAKEN" => Ok(Server::Kraken),
+            "RAFFLESIA" => Ok(Server::Rafflesia),
+            "GOLEM" => Ok(Server::Golem),
+
+            /// EU
+            //  Chaos
+            "CERBERUS" => Ok(Server::Cerberus),
+            "LOUISOIX" => Ok(Server::Louisoix),
+            "MOOGLE" => Ok(Server::Moogle),
+            "OMEGA" => Ok(Server::Omega),
+            "PHANTOM" => Ok(Server::Phantom),
+            "RAGNAROK" => Ok(Server::Ragnarok),
+            "SAGITTARIUS" => Ok(Server::Sagittarius),
+            "SPRIGGAN" => Ok(Server::Spriggan),
+
+            //  Light
+            "ALPHA" => Ok(Server::Alpha),
+            "LICH" => Ok(Server::Lich),
+            "ODIN" => Ok(Server::Odin),
+            "PHOENIX" => Ok(Server::Phoenix),
+            "RAIDEN" => Ok(Server::Raiden),
+            "SHIVA" => Ok(Server::Shiva),
+            "TWINTANIA" => Ok(Server::Twintania),
+            "ZODIARK" => Ok(Server::Zodiark),
+
+            //  Shadow (Temp DC for dawntrail launch)
+            "INNOCENCE" => Ok(Server::Innocence),
+            "PIXIE" => Ok(Server::Pixie),
+            "TITANIA" => Ok(Server::Titania),
+            "TYCOON" => Ok(Server::Tycoon),
+
+            /// OCE
+            //  Materia
+            "BISMARCK" => Ok(Server::Bismarck),
+            "RAVANA" => Ok(Server::Ravana),
+            "SEPHIROT" => Ok(Server::Sephirot),
+            "SOPHIA" => Ok(Server::Sophia),
+            "ZURVAN" => Ok(Server::Zurvan),
+
+            /// JP
             //  Elemental
             "AEGIS" => Ok(Server::Aegis),
             "ATOMOS" => Ok(Server::Atomos),
@@ -102,10 +219,9 @@ impl FromStr for Server {
             "GARUDA" => Ok(Server::Garuda),
             "GUNGNIR" => Ok(Server::Gungnir),
             "KUJATA" => Ok(Server::Kujata),
-            "RAMUH" => Ok(Server::Ramuh),
             "TONBERRY" => Ok(Server::Tonberry),
             "TYPHON" => Ok(Server::Typhon),
-            "UNICORN" => Ok(Server::Unicorn),
+
             //  Gaia
             "ALEXANDER" => Ok(Server::Alexander),
             "BAHAMUT" => Ok(Server::Bahamut),
@@ -115,61 +231,26 @@ impl FromStr for Server {
             "RIDILL" => Ok(Server::Ridill),
             "TIAMAT" => Ok(Server::Tiamat),
             "ULTIMA" => Ok(Server::Ultima),
-            "VALEFOR" => Ok(Server::Valefor),
-            "YOJIMBO" => Ok(Server::Yojimbo),
-            "ZEROMUS" => Ok(Server::Zeromus),
+
             //  Mana
-            "ANIUMA" => Ok(Server::Aniuma),
+            "ANIMA" => Ok(Server::Anima),
             "ASURA" => Ok(Server::Asura),
-            "BELIAS" => Ok(Server::Belias),
             "CHOCOBO" => Ok(Server::Chocobo),
             "HADES" => Ok(Server::Hades),
             "IXION" => Ok(Server::Ixion),
-            "MANDRAGORA" => Ok(Server::Mandragora),
             "MASAMUNE" => Ok(Server::Masamune),
             "PANDAEMONIUM" => Ok(Server::Pandaemonium),
-            "SHINRYU" => Ok(Server::Shinryu),
             "TITAN" => Ok(Server::Titan),
-            //  Aether
-            "ADAMANTOISE" => Ok(Server::Adamantoise),
-            "BALMUNG" => Ok(Server::Balmung),
-            "CACTUAR" => Ok(Server::Cactuar),
-            "COEURL" => Ok(Server::Coeurl),
-            "FAERIE" => Ok(Server::Faerie),
-            "GILGAMESH" => Ok(Server::Gilgamesh),
-            "GOBLIN" => Ok(Server::Goblin),
-            "JENOVA" => Ok(Server::Jenova),
-            "MATEUS" => Ok(Server::Mateus),
-            "MIDGARDSORMR" => Ok(Server::Midgardsormr),
-            "SARGATANAS" => Ok(Server::Sargatanas),
-            "SIREN" => Ok(Server::Siren),
-            "ZALERA" => Ok(Server::Zalera),
-            //  Primal
-            "BEHEMOTH" => Ok(Server::Behemoth),
-            "BRYNHILDR" => Ok(Server::Brynhildr),
-            "DIABOLOS" => Ok(Server::Diabolos),
-            "EXCALIBUR" => Ok(Server::Excalibur),
-            "EXODUS" => Ok(Server::Exodus),
-            "FAMFRIT" => Ok(Server::Famfrit),
-            "HYPERION" => Ok(Server::Hyperion),
-            "LAMIA" => Ok(Server::Lamia),
-            "LEVIATHAN" => Ok(Server::Leviathan),
-            "MALBORO" => Ok(Server::Malboro),
-            "ULTROS" => Ok(Server::Ultros),
-            //  Chaos
-            "CERBERUS" => Ok(Server::Cerberus),
-            "LOUISOIX" => Ok(Server::Louisoix),
-            "MOOGLE" => Ok(Server::Moogle),
-            "OMEGA" => Ok(Server::Omega),
-            "RAGNAROK" => Ok(Server::Ragnarok),
-            "SPRIGGAN" => Ok(Server::Spriggan),
-            //  Light
-            "LICH" => Ok(Server::Lich),
-            "ODIN" => Ok(Server::Odin),
-            "PHOENIX" => Ok(Server::Phoenix),
-            "SHIVA" => Ok(Server::Shiva),
-            "TWINTANIA" => Ok(Server::Twintania),
-            "ZODIARK" => Ok(Server::Zodiark),
+
+            //  Meteor
+            "BELIAS" => Ok(Server::Belias),
+            "MANDRAGORA" => Ok(Server::Mandragora),
+            "RAMUH" => Ok(Server::Ramuh),
+            "SHINRYU" => Ok(Server::Shinryu),
+            "UNICORN" => Ok(Server::Unicorn),
+            "VALEFOR" => Ok(Server::Valefor),
+            "YOJIMBO" => Ok(Server::Yojimbo),
+            "ZEROMUS" => Ok(Server::Zeromus),
             
             x => Err(ServerParseError(x.into())),
         }
@@ -179,81 +260,122 @@ impl FromStr for Server {
 impl fmt::Display for Server {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let server = match *self {
-            //  Elemental
-            Server::Aegis => "Aegis",
-            Server::Atomos => "Atomos",
-            Server::Carbuncle => "Carbuncle",
-            Server::Garuda => "Garuda",
-            Server::Gungnir => "Gungnir",
-            Server::Kujata => "Kujata",
-            Server::Ramuh => "Ramuh",
-            Server::Tonberry => "Tonberry",
-            Server::Typhon => "Typhon",
-            Server::Unicorn => "Unicorn",
-            //  Gaia
-            Server::Alexander => "Alexander",
-            Server::Bahamut => "Bahamut",
-            Server::Durandal => "Durandal",
-            Server::Fenrir => "Fenrir",
-            Server::Ifrit => "Ifrit",
-            Server::Ridill => "Ridill",
-            Server::Tiamat => "Tiamat",
-            Server::Ultima => "Ultima",
-            Server::Valefor => "Valefor",
-            Server::Yojimbo => "Yojimbo",
-            Server::Zeromus => "Zeromus",
-            //  Mana
-            Server::Aniuma => "Aniuma",
-            Server::Asura => "Asura",
-            Server::Belias => "Belias",
-            Server::Chocobo => "Chocobo",
-            Server::Hades => "Hades",
-            Server::Ixion => "Ixion",
-            Server::Mandragora => "Mandragora",
-            Server::Masamune => "Masamune",
-            Server::Pandaemonium => "Pandaemonium",
-            Server::Shinryu => "Shinryu",
-            Server::Titan => "Titan",
+            /// NA
             //  Aether
             Server::Adamantoise => "Adamantoise",
-            Server::Balmung => "Balmung",
-            Server::Cactuar => "Cactuar",
-            Server::Coeurl => "Coeurl",
-            Server::Faerie => "Faerie",
-            Server::Gilgamesh => "Gilgamesh",
-            Server::Goblin => "Goblin",
-            Server::Jenova => "Jenova",
-            Server::Mateus => "Mateus",
-            Server::Midgardsormr => "Midgardsormr",
-            Server::Sargatanas => "Sargatanas",
-            Server::Siren => "Siren",
-            Server::Zalera => "Zalera",
-            //  Primal
-            Server::Behemoth => "Behemoth",
-            Server::Brynhildr => "Brynhildr",
-            Server::Diabolos => "Diabolos",
-            Server::Excalibur => "Excalibur",
-            Server::Exodus => "Exodus",
-            Server::Famfrit => "Famfrit",
-            Server::Hyperion => "Hyperion",
-            Server::Lamia => "Lamia",
-            Server::Leviathan => "Leviathan",
-            Server::Malboro => "Malboro",
-            Server::Ultros => "Ultros",
-            //  Chaos
-            Server::Cerberus => "Cerberus",
-            Server::Louisoix => "Louisoix",
-            Server::Moogle => "Moogle",
-            Server::Omega => "Omega",
-            Server::Ragnarok => "Ragnarok",
-            Server::Spriggan => "Spriggan",
-            //  Light
-            Server::Lich => "Lich",
-            Server::Odin => "Odin",
-            Server::Phoenix => "Phoenix",
-            Server::Shiva => "Shiva",
-            Server::Twintania => "Twintania",
-            Server::Zodiark => "Zodiark",
+            Server::Cactuar =>     "Cactuar",
+            Server::Faerie =>      "Faerie",
+            Server::Gilgamesh =>   "Gilgamesh",
+            Server::Jenova =>      "Jenova",
+            Server::Midgardsormr =>"Midgardsormr",
+            Server::Sargatanas =>  "Sargatanas",
+            Server::Siren =>       "Siren",
+                                    
+            //  Primal              
+            Server::Behemoth =>    "Behemoth",
+            Server::Excalibur =>   "Excalibur",
+            Server::Exodus =>      "Exodus",
+            Server::Famfrit =>     "Famfrit",
+            Server::Hyperion =>    "Hyperion",
+            Server::Lamia =>       "Lamia",
+            Server::Leviathan =>   "Leviathan",
+            Server::Ultros =>      "Ultros",
+                                    
+            // Crystal              
+            Server::Balmung =>     "Balmung",
+            Server::Brynhildr =>   "Brynhildr",
+            Server::Coeurl =>      "Coeurl",
+            Server::Diabolos =>    "Diabolos",
+            Server::Goblin =>      "Goblin",
+            Server::Malboro =>     "Malboro",
+            Server::Mateus =>      "Mateus",
+            Server::Zalera =>      "Zalera",
+                                    
+            // dynamis              
+            Server::Halicarnassus => "Halicarnassus", 
+            Server::Maduin =>        "Maduin",
+            Server::Marilith =>      "Marilith",
+            Server::Seraph =>        "Seraph",
+            Server::Cuchulainn =>    "Cuchulainn",
+            Server::Kraken =>        "Kraken",
+            Server::Rafflesia =>     "Rafflesia",
+            Server::Golem =>         "Golem",
+                                    
+            /// EU                  
+            //  Chaos               
+            Server::Cerberus =>    "Cerberus",
+            Server::Louisoix =>    "Louisoix",
+            Server::Moogle =>      "Moogle",
+            Server::Omega =>       "Omega",
+            Server::Phantom =>     "Phantom",
+            Server::Ragnarok =>    "Ragnarok",
+            Server::Sagittarius => "Sagittarius",
+            Server::Spriggan =>    "Spriggan",
+                                    
+            //  Light               
+            Server::Alpha =>       "Alpha",
+            Server::Lich =>        "Lich",
+            Server::Odin =>        "Odin",
+            Server::Phoenix =>     "Phoenix",
+            Server::Raiden =>      "Raiden",
+            Server::Shiva =>       "Shiva",
+            Server::Twintania =>   "Twintania",
+            Server::Zodiark =>     "Zodiark",
+                                    
+            //  Shadow (Temp DC for dawntrail launch)
+            Server::Innocence =>   "Innocence",
+            Server::Pixie =>       "Pixie",
+            Server::Titania =>     "Titania",
+            Server::Tycoon =>      "Tycoon",
+                                    
+            /// OCE                 
+            //  Materia             
+            Server::Bismarck =>    "Bismarck",
+            Server::Ravana =>      "Ravana",
+            Server::Sephirot =>    "Sephirot",
+            Server::Sophia =>      "Sophia",
+            Server::Zurvan =>      "Zurvan",
+                                    
+            /// JP                  
+            //  Elemental           
+            Server::Aegis =>       "Aegis",
+            Server::Atomos =>      "Atomos",
+            Server::Carbuncle =>   "Carbuncle",
+            Server::Garuda =>      "Garuda",
+            Server::Gungnir =>     "Gungnir",
+            Server::Kujata =>      "Kujata",
+            Server::Tonberry =>    "Tonberry",
+            Server::Typhon =>      "Typhon",
+                                    
+            //  Gaia                
+            Server::Alexander =>   "Alexander",
+            Server::Bahamut =>     "Bahamut",
+            Server::Durandal =>    "Durandal",
+            Server::Fenrir =>      "Fenrir",
+            Server::Ifrit =>       "Ifrit",
+            Server::Ridill =>      "Ridill",
+            Server::Tiamat =>      "Tiamat",
+            Server::Ultima =>      "Ultima",
+                                    
+            //  Mana                
+            Server::Anima =>      "Anima",
+            Server::Asura =>       "Asura",
+            Server::Chocobo =>     "Chocobo",
+            Server::Hades =>       "Hades",
+            Server::Ixion =>       "Ixion",
+            Server::Masamune =>    "Masamune",
+            Server::Pandaemonium =>"Pandaemonium", 
+            Server::Titan =>       "Titan",
+                                    
+            //  Meteor              
+            Server::Belias =>      "Belias",
+            Server::Mandragora =>  "Mandragora",
+            Server::Ramuh =>       "Ramuh",
+            Server::Shinryu =>     "Shinryu",
+            Server::Unicorn =>     "Unicorn",
+            Server::Valefor =>     "Valefor",
+            Server::Yojimbo =>     "Yojimbo",
+            Server::Zeromus =>     "Zeromus",
         };
 
         write!(f, "{}", server)
