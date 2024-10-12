@@ -14,5 +14,5 @@ license = "MIT"
 [dependencies]
 failure = "0.1.8"
 lazy_static = "1.4.0"
-reqwest = {version = "0.10.7", features = ["blocking"]}
-select = "0.5.0"
+reqwest = {version = "0.12", features = ["blocking"]}
+select = "0.6.0"
