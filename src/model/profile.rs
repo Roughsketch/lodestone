@@ -6,6 +6,7 @@ use std::str::FromStr;
 
 use crate::model::{
     attribute::{Attribute, Attributes},
+    gear::{Slot, EquippedGear},
     clan::Clan,
     class::{Classes, ClassInfo, ClassType},
     gender::Gender, 
@@ -33,9 +34,22 @@ struct CharInfo {
     gender: Gender,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 struct HomeInfo {
     server: Server,
     datacenter: Datacenter,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+struct PlayerInfo {
+    class: Option<ClassType>,
+    level: u32,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct FieldOps {
+    bozja: Option<u32>,
+    eureka: Option<u32>
 }
 
 /// Takes a Document and a search expression, and will return
@@ -84,6 +98,14 @@ pub struct Profile {
     pub hp: u32,
     /// Max MP.
     pub mp: u32,
+    /// Current class
+    pub class: Option<ClassType>,
+    /// Current class's level
+    pub level: u32,
+    /// A list of field operation levels
+    pub fieldops: FieldOps,
+    /// A list of gear slots
+    pub gear: EquippedGear,
     /// A list of attributes and their values.
     pub attributes: Attributes,
     /// A list of classes and their corresponding levels.
@@ -107,6 +129,8 @@ impl Profile {
 
         let (hp, mp) = Self::parse_char_param(&main_doc)?;
 
+        let (player_info, gear) = Self::parse_profile_info(&main_doc)?;
+
         Ok(Self {
             user_id,
             free_company: Self::parse_free_company(&main_doc),
@@ -122,6 +146,10 @@ impl Profile {
             gender: char_info.gender,
             hp,
             mp,
+            class: player_info.class,
+            level: player_info.level,
+            gear,
+            fieldops: Self::parse_fieldops(&classes_doc)?,
             attributes: Self::parse_attributes(&main_doc)?,
             classes: Self::parse_classes(&classes_doc)?,
         })
@@ -231,6 +259,140 @@ impl Profile {
                 gender: Gender::from_str(&char_info[2])?,
             })
         }
+    }
+
+    fn parse_profile_info(doc: &Document) -> Result<(PlayerInfo, EquippedGear), Error> {
+        let attr_block = ensure_node!(doc, Class("character__profile__detail"));
+        // comes in format `LEVEL 81 `, trailing space included
+        let level: u32 = ensure_node!(attr_block, Class("character__class__data"))
+            .text()
+            .replace("LEVEL", "")
+            .replace(" ", "")
+            .parse::<u32>()
+            .unwrap_or(0);
+
+        let class: Option<ClassType> = 'class: {
+            // get the job icon url
+            let class_icon = ensure_node!(attr_block, Class("character__class_icon"))
+            .first_child()
+            .unwrap()
+            .attr("src");
+            if class_icon.is_none() {
+                break 'class None;
+            }
+
+            match ClassType::from_str(class_icon.unwrap()) {
+                Ok(class_type) => Some(class_type),
+                Err(_) => None,
+            }
+        };
+
+        // loop through gear slots and push them to the vec
+        let mut equipped_gear = Vec::with_capacity(14);
+        for item in attr_block.find(Class("js__db_tooltip")) {
+            // childless div = empty slot
+            if item.first_child().is_none() {
+                equipped_gear.push(None);
+                continue;
+            }
+
+            let mut slot = Slot::default();
+            slot.name = {
+                match item.find(Class("db-tooltip__item__name")).next() {
+                    Some(node) => Some(node.text()),
+                    None => None,
+                }
+            };
+            slot.glamour_name = {
+                // using the `view item details` button on hover, and fetching the parent <p>'s text
+                match item.find(Class("db-tooltip__item__mirage__btn")).next() {
+                    Some(node) => Some(
+                        node.parent()
+                        .unwrap()
+                        .text()
+                    ),
+                    None => None,
+                }
+            };
+            slot.ilvl = {
+                match item.find(Class("db-tooltip__item__level")).next() {
+                    Some(node) => Some(
+                        // comes in format `Item Level 630`
+                        node.text()
+                        .replace("Item Level ", "")
+                        .parse::<u32>()
+                        .unwrap_or(0)
+                    ),
+                    None => None,
+                }
+            };
+            equipped_gear.push(Some(slot));
+        };
+
+        Ok(
+            (PlayerInfo {
+                class,
+                level,
+            },
+            EquippedGear {
+                mainhand:       equipped_gear[0].clone(),
+                head:           equipped_gear[1].clone(),
+                body:           equipped_gear[2].clone(),
+                hands:          equipped_gear[3].clone(),
+                legs:           equipped_gear[4].clone(),
+                feet:           equipped_gear[5].clone(),
+                facewear:       equipped_gear[6].clone(),
+                offhand:        equipped_gear[7].clone(),
+                earrings:       equipped_gear[8].clone(),
+                necklace:       equipped_gear[9].clone(),
+                bracelets:      equipped_gear[10].clone(),
+                ring_left:      equipped_gear[11].clone(),
+                ring_right:     equipped_gear[12].clone(),
+                soul_crystal:   equipped_gear[13].clone(),
+            }
+        ))
+    }
+
+    fn parse_fieldops(doc: &Document) -> Result<FieldOps, Error> {
+        let attr_block = ensure_node!(doc, Class("character__content"));
+
+        // if not unlocked, the corresponding div is absent. otherwise its all there
+        let bozja: Option<u32> = {
+            match doc.find(Class("xiv-lds-resistance-level")).next() {
+                Some(node) => Some(
+                    node
+                    .parent().unwrap()
+                    .parent().unwrap()
+                    .find(Class("character__job__level"))
+                    .next().unwrap()
+                    .text()
+                    .parse::<u32>()
+                    .unwrap_or(0)
+                ),
+                None => None,
+            }
+        };
+
+        let eureka: Option<u32> = {
+            match doc.find(Class("xiv-lds-elemental-level")).next() {
+                Some(node) => Some(
+                    node
+                    .parent().unwrap()
+                    .parent().unwrap()
+                    .find(Class("character__job__level"))
+                    .next().unwrap()
+                    .text()
+                    .parse::<u32>()
+                    .unwrap_or(0)
+                ),
+                None => None,
+            }
+        };
+
+        Ok(FieldOps {
+            bozja,
+            eureka,
+        })
     }
 
     fn parse_char_param(doc: &Document) -> Result<(u32, u32), Error> {
